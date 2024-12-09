@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scan Kamera</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+      }
+
+      body {
+        background-color: #f8f8f8;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+      }
+
+      .header {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+      }
+
+      .back-button {
+        background: none;
+        border: none;
+        font-size: 24px;
+        color: #333;
+        cursor: pointer;
+      }
+
+      .back-button i {
+        font-size: 28px;
+      }
+
+      .back-button:hover {
+        color: #555;
+      }
+
+      .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        text-align: center;
+      }
+
+      .camera-icon {
+        font-size: 80px;
+        color: #7e57c2;
+      }
+
+      .scan-text {
+        font-size: 18px;
+        font-weight: bold;
+        color: #7e57c2;
+      }
+
+      #startScanButton {
+        background-color: #7e57c2;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+
+      #startScanButton:hover {
+        background-color: #6c4cb6;
+      }
+
+      video {
+        display: none;
+        margin-top: 20px;
+        border: 2px solid #ccc;
+        border-radius: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Back Button -->
+    <div class="header">
+      <button class="back-button" onclick="goHome()">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+      <div class="camera-icon">
+        <i class="fas fa-camera"></i>
+      </div>
+      <div class="scan-text">Scan Kamera</div>
+      <button id="startScanButton">Mulai Scan</button>
+      <video id="video" width="640" height="480" autoplay></video>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+      // Back to Home Function
+      function goHome() {
+        window.location.href = "{{ url_for('beranda') }}";
+      }
+
+      // Start video streaming when the button is clicked
+      document
+        .getElementById("startScanButton")
+        .addEventListener("click", function () {
+          const video = document.getElementById("video");
+
+          // Access the user's camera
+          if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices
+              .getUserMedia({ video: true })
+              .then(function (stream) {
+                video.srcObject = stream;
+                video.style.display = "block"; // Show the video
+                video.play();
+              })
+              .catch(function (error) {
+                console.error("Error accessing camera:", error);
+                alert(
+                  "Tidak dapat mengakses kamera. Pastikan izin kamera telah diberikan."
+                );
+              });
+          } else {
+            alert("Browser Anda tidak mendukung akses kamera.");
+          }
+        });
+    </script>
+  </body>
+</html>
