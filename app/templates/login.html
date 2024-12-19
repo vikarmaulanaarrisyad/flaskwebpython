@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login Form</title>
     <style>
+      /* Styling tetap sama */
       body {
         font-family: Arial, sans-serif;
         margin: 0;
@@ -39,9 +40,9 @@
 
       .login-form input {
         width: 100%;
-        max-width: 280px; /* Batasi panjang maksimal */
+        max-width: 280px;
         padding: 12px;
-        margin: 0 auto 15px; /* Pusatkan dan beri jarak antar elemen */
+        margin: 0 auto 15px;
         display: block;
         border: 1px solid #ddd;
         border-radius: 8px;
@@ -69,7 +70,7 @@
 
       .btn-login {
         width: 100%;
-        max-width: 280px; /* Samakan dengan input agar seragam */
+        max-width: 280px;
         padding: 12px;
         background-color: #007bff;
         color: #ffffff;
@@ -78,7 +79,7 @@
         font-size: 16px;
         font-weight: bold;
         cursor: pointer;
-        margin: 0 auto; /* Pusatkan tombol */
+        margin: 0 auto;
         display: block;
         transition: background-color 0.3s ease, box-shadow 0.3s ease;
       }
@@ -103,7 +104,52 @@
       .signup-link:hover {
         text-decoration: underline;
       }
+
+      .error-message {
+        color: red;
+        font-size: 12px;
+        margin-bottom: 15px;
+      }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+      async function handleLogin(event) {
+        event.preventDefault();
+
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        try {
+          const response = await axios.post("/api/login", { email, password });
+
+          // Pastikan status respons adalah 200
+          if (response.status === 200) {
+            // Simpan token di localStorage atau sessionStorage
+            localStorage.setItem(
+              "access_token",
+              response.data.data.access_token
+            );
+            localStorage.setItem(
+              "refresh_token",
+              response.data.data.refresh_token
+            );
+            localStorage.setItem("user", response.data.data);
+
+            // Redirect ke halaman beranda setelah login berhasil
+            window.location.href = "/";
+          } else {
+            // Jika login gagal, tampilkan pesan error
+            const errorMessage = document.getElementById("error-message");
+            errorMessage.textContent = response.data.message || "Login gagal.";
+          }
+        } catch (error) {
+          const errorMessage = document.getElementById("error-message");
+          errorMessage.textContent =
+            error.response?.data?.message ||
+            "Terjadi kesalahan saat mencoba login.";
+        }
+      }
+    </script>
   </head>
   <body>
     <div class="container">
@@ -113,9 +159,15 @@
         class="logo"
       />
       <h2>Form Login</h2>
-      <form class="login-form">
-        <input type="email" placeholder="Masukan Email" required />
-        <input type="password" placeholder="Masukan Password" required />
+      <form class="login-form" onsubmit="handleLogin(event)">
+        <p id="error-message" class="error-message"></p>
+        <input type="email" id="email" placeholder="Masukan Email" required />
+        <input
+          type="password"
+          id="password"
+          placeholder="Masukan Password"
+          required
+        />
         <a href="{{ url_for('forgot') }}" class="forgot-password"
           >Lupa Password?</a
         >
@@ -123,7 +175,7 @@
       </form>
       <p class="signup-text">
         Belum Punya Akun?
-        <a href="{{ url_for('register') }}" class="signup-link"
+        <a href="{{ url_for('register_page') }}" class="signup-link"
           >Daftar Sekarang</a
         >
       </p>
